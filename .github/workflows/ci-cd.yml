@@ -51,9 +51,6 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=http://localhost:9000 \
             -Dsonar.login=${{ secrets.SONARQUBETOKEN }}
-git add .github/workflows/ci-cd.yml
-git commit -m "Fixed SonarQube scanner installation"
-git push origin Development 
 
   docker-build:
     name: Build & Push Docker Image
