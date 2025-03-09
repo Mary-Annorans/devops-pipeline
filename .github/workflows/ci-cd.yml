@@ -43,7 +43,7 @@ jobs:
             -Dsonar.projectKey=my-flask-app \
             -Dsonar.sources=. \
             -Dsonar.host.url=http://localhost:9000 \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONARQUBETOKEN }}
 
   docker-build:
     name: Build & Push Docker Image
