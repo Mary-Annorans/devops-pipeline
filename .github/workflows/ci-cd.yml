@@ -24,11 +24,10 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r src/requirements.txt  # Ensure path is correct
+          pip install -r requirements.txt
 
       - name: Run Tests
-        run: |
-          pytest src/  # Ensure tests exist inside `src/`
+        run: pytest
 
   sonarqube:
     name: SonarQube Analysis
@@ -39,15 +38,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run SonarQube Scan
-        env:
-          SONAR_HOST_URL: "http://localhost:9000"  # Ensure this is accessible
-          SONAR_LOGIN: ${{ secrets.SONARQUBE_TOKEN }}
         run: |
           sonar-scanner \
             -Dsonar.projectKey=my-flask-app \
             -Dsonar.sources=. \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_LOGIN
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
   docker-build:
     name: Build & Push Docker Image
@@ -61,14 +57,10 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
-        run: |
-          docker build -t maryann123456789/my-flask-app:latest ./src  # Replace with your Docker Hub username
-          docker tag maryann123456789/my-flask-app:latest maryann123456789/my-flask-app:${{ github.sha }}  # Versioning
+        run: docker build -t maryann123456789/my-flask-app:latest .
 
       - name: Push Docker Image
-        run: |
-          docker push maryann123456789/my-flask-app:latest
-          docker push maryann123456789/my-flask-app:${{ github.sha }}
+        run: docker push maryann123456789/my-flask-app:latest
 
   deploy:
     name: Deploy to Kubernetes
@@ -84,10 +76,7 @@ jobs:
           version: 'latest'
 
       - name: Configure Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+        run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
